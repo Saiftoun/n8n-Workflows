@@ -24,17 +24,11 @@
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -416,
+        16
       ],
-      "id": "161bfc65-2b3a-4cd2-9833-94886ef4a309",
-      "name": "Google Drive Trigger",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "s8lzeho0egzVFYxg",
-          "name": "Google Drive account"
-        }
-      }
+      "id": "27c0e44e-9041-478d-896c-11c72980612d",
+      "name": "Google Drive Trigger"
     },
     {
       "parameters": {
@@ -49,17 +43,11 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        208,
-        0
+        -208,
+        16
       ],
-      "id": "5d028e9c-25ae-423b-9d93-a78743d94301",
-      "name": "Download file",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "s8lzeho0egzVFYxg",
-          "name": "Google Drive account"
-        }
-      }
+      "id": "fa9acebf-3f4c-4d62-bdcc-0111d00310cf",
+      "name": "Download file"
     },
     {
       "parameters": {
@@ -75,17 +63,11 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        416,
-        -16
+        0,
+        0
       ],
-      "id": "b3c6d573-b2d2-4775-bdeb-a4e3ad69576f",
-      "name": "Supabase Vector Store",
-      "credentials": {
-        "supabaseApi": {
-          "id": "oMa3J0MwMHArHxf4",
-          "name": "Supabase account"
-        }
-      }
+      "id": "2f6d6897-a6ac-439f-b9eb-110661d6332d",
+      "name": "Supabase Vector Store"
     },
     {
       "parameters": {
@@ -95,10 +77,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        528,
-        240
+        112,
+        256
       ],
-      "id": "8e0b1193-f297-4a29-aec2-42c0b0418443",
+      "id": "55c90b9a-6f94-43bc-a5fb-c17e39210754",
       "name": "Default Data Loader"
     },
     {
@@ -108,18 +90,12 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        336,
-        224
+        -80,
+        240
       ],
-      "id": "b0a54666-51c2-44e5-a5d8-31f64e8f75c2",
+      "id": "a4bef802-6363-463f-88c3-697e40839cfb",
       "name": "Embeddings Ollama",
-      "notesInFlow": false,
-      "credentials": {
-        "ollamaApi": {
-          "id": "vePnhoTZHoggXm8n",
-          "name": "Ollama account"
-        }
-      }
+      "notesInFlow": false
     },
     {
       "parameters": {
@@ -128,10 +104,10 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        624,
-        448
+        208,
+        464
       ],
-      "id": "256be839-455b-4823-bd20-2ddf41785956",
+      "id": "91104a37-32fa-4b4f-b205-74b28d540ad7",
       "name": "Recursive Character Text Splitter"
     },
     {
@@ -141,10 +117,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        896,
-        48
+        480,
+        64
       ],
-      "id": "9560d32b-d6e0-4a1b-88dc-ec6cfa16a75e",
+      "id": "5ba7a6ec-4ae5-4b9e-b460-8e7644bdaa26",
       "name": "When chat message received",
       "webhookId": "00761a40-9a73-47b2-b34e-53442ddbcc0c"
     },
@@ -155,35 +131,11 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1120,
-        32
+        704,
+        48
       ],
-      "id": "362f4372-712d-45ab-98bc-9f83e6d08f12",
+      "id": "0137bd70-6139-4944-8cb3-dd13524a00b7",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        992,
-        240
-      ],
-      "id": "8989d746-2327-4446-a4b6-5d91ef4d0140",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "ZJBzXDlT5jLxDu6o",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -200,17 +152,11 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        1392,
-        256
+        976,
+        272
       ],
-      "id": "c1d255d0-ba6f-4594-9745-746a0663bb23",
-      "name": "Supabase Vector Store1",
-      "credentials": {
-        "supabaseApi": {
-          "id": "oMa3J0MwMHArHxf4",
-          "name": "Supabase account"
-        }
-      }
+      "id": "f23db0b3-8c4c-48b5-a314-00e3d690fbc3",
+      "name": "Supabase Vector Store1"
     },
     {
       "parameters": {
@@ -219,17 +165,11 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        1488,
-        464
+        1072,
+        480
       ],
-      "id": "ace673c4-c1e3-4c6c-aae0-68792f52ff8f",
-      "name": "Embeddings Ollama1",
-      "credentials": {
-        "ollamaApi": {
-          "id": "vePnhoTZHoggXm8n",
-          "name": "Ollama account"
-        }
-      }
+      "id": "ccbd84f3-e914-4361-a964-51fc625d0629",
+      "name": "Embeddings Ollama1"
     },
     {
       "parameters": {
@@ -238,11 +178,31 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        912,
-        384
+        496,
+        400
       ],
-      "id": "b7b2ddbf-63c5-4d39-a487-7d6334c43ae6",
+      "id": "b9b55c1d-bfbf-45e3-8a18-7989fe656014",
       "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        576,
+        256
+      ],
+      "id": "b12a5946-1ced-436c-9d29-7e8089e81b2b",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "2qHAobXFcip1r2Zr",
+          "name": "Groq account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -313,17 +273,6 @@
         ]
       ]
     },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Supabase Vector Store1": {
       "ai_tool": [
         [
@@ -345,17 +294,27 @@
           }
         ]
       ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6db632cf-32c0-4b80-b8c1-8397a8ff7db7",
+  "versionId": "8c512029-0840-48b2-8543-804a07774bc6",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "04aff3e5d124c7f2e56cced978479887c47503071fc1a4780330af949b35bf2d"
+    "instanceId": "4dbccb23daa16ae23a9d378ecef6e984f63b2c9d6f14ecfb0a4057ce91ee3684"
   },
-  "id": "EFtqPQeER62V5qzd",
+  "id": "I4I2HC2BADs2y4W2",
   "tags": []
 }
