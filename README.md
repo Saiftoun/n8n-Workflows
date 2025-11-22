@@ -33,7 +33,7 @@ This workflow is structured around the **n8n AI Agent** design pattern:
 
 | Component | Role | Connected Nodes |
 | :--- | :--- | :--- |
-| **Main Pipeline** | | |
+|  |
 | **Telegram Trigger** | Captures incoming messages and initiates the process. | Telegram Trigger |
 | **AI Agent** | The central orchestrator that processes inputs, maintains memory, and decides which tool to call. | AI Agent |
 | **Groq Chat Model** | Provides the powerful LLM reasoning core for the Agent. | Groq Chat Model |
