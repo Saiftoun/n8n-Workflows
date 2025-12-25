@@ -1,0 +1,226 @@
+{
+  "name": "CV 1",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -304,
+        80
+      ],
+      "id": "f216724b-6668-4051-b702-222e8d4236ac",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1Bibb03OK28Xg7yCGoyb5TrSaYAMAsAjR",
+          "mode": "list",
+          "cachedResultName": "CV STAGE Perfectionnement.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1Bibb03OK28Xg7yCGoyb5TrSaYAMAsAjR/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "pdf_file_one"
+        }
+      },
+      "id": "3c11fd36-456c-4ef3-b757-fb24c87adc40",
+      "name": "Download PDF from Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        32,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "neXWzJzSZ5svBp16",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s)').item.json.gmail }}",
+        "subject": "Demande de stage de perfectionnement - Étudiant ISET 2ème année",
+        "message": "=<p>Hello!</p> <p>Madame, Monsieur,\nÉtudiant en deuxième année à l'ISET Developpement de Systeme d'information, je souhaite effectuer mon stage de perfectionnement au sein de votre établissement Horizon Lux Kélibia.\nVous trouverez ci-joint mon CV ainsi que ma lettre de motivation détaillant mes compétences et ma motivation pour rejoindre votre équipe.\nJe reste à votre disposition pour un éventuel entretien.</p>\n<p>Sincères salutations </p>\n<p>Saifeddine Tounsi</p>\n<p>58054585</p>\n<p>saiftounsi.facebook@gmail.com</p>\n\n\n",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "pdf_file_one,pdf_file_two"
+              }
+            ]
+          }
+        }
+      },
+      "id": "5c37c540-b0e1-4ef1-948d-99e0e12e990f",
+      "name": "Send Email with PDF",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "webhookId": "0f9a333a-4165-470f-8c43-75323189f519",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FGQIAxFayZVt4Tmh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1nSAquSyOfeGj5YhuWt0RKBORW0ONIMle",
+          "mode": "list",
+          "cachedResultName": "Lettre de Horizon Lux.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1nSAquSyOfeGj5YhuWt0RKBORW0ONIMle/view?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "pdf_file_two"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5cb4f673-18f2-4736-ba50-c9ee8a790976",
+      "name": "Download LM from Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "neXWzJzSZ5svBp16",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        288,
+        48
+      ],
+      "id": "10d884b7-8c40-4104-bdb0-e9dc78a08850",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "KNJbnPbBGkAWNBXJ",
+          "mode": "list",
+          "cachedResultName": "cv",
+          "cachedResultUrl": "/projects/hrX9YmdmVX19epDQ/datatables/KNJbnPbBGkAWNBXJ"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        80,
+        320
+      ],
+      "id": "d0af6608-f0a5-4878-82b3-47df30a42498",
+      "name": "Get row(s)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download PDF from Drive": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Download LM from Drive": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send Email with PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Download LM from Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download PDF from Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e4c71bf6-281a-473e-aca8-76511ed73798",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c57494c63eac81c81249c62828e8c3820aa52c05313b3fa16a2760486dc7dcd1"
+  },
+  "id": "kB6K6y28r3puwy0J",
+  "tags": []
+}
