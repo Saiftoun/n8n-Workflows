@@ -1,0 +1,762 @@
+{
+  "name": "Telegram to Gmail PDF Sender (Simple)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "018020fb-e903-46ff-b9d6-db5541548483",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2048,
+        528
+      ],
+      "webhookId": "818a4407-5bb0-4775-8941-eb5bf1637f2e",
+      "credentials": {
+        "telegramApi": {
+          "id": "hyXh1Lh6DvkbTH4c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User's message: {{ $json.message.text }}\n\nReview conversation history to see what has been collected.\nProcess this message according to the current stage.\nRemember: Collect Gmail first, then company number, then output JSON .",
+        "options": {
+          "systemMessage": "=You are a document processing assistant that collects Gmail and company selection.\n\nCONVERSATION FLOW:\n\nSTAGE 1 - COLLECT GMAIL:\nCheck conversation history: Do we have a Gmail address?\n- If NO: Use your tool to send \"Hello! Please provide your Gmail address.\"\n- When user responds:\n  * If contains \"@\": Use your tool to send \"✅ Email saved!\"\n  * If does NOT contain \"@\": Use your tool to send \"Please provide a valid Gmail address (must contain  \"@\")\"\n  * Store the Gmail in memory\n\nSTAGE 2 - COLLECT COMPANY NUMBER:\nOnly after Gmail is confirmed:\n- Use your tool to send this message:\n  \"Great! Now choose your company by sending its number:\n  \n  1 - Horizon Lux\n  2 - Provesta\n  3 - Reverbyte Software\n  \n  Reply with just the number: 1, 2, or 3\"\n\"Remarque you need to write the gmail and the number together\"\n- When user responds with a number:\n  * If \"1\" or \"2\" or \"3\": Proceed to output\n  * If anything else: Use your tool to send \"Please reply with 1, 2, or 3\"\n\nFINAL OUTPUT FORMAT:\nWhen you have BOTH Gmail and valid company number, output ONLY this JSON (no tool, just plain text):\n{\"gmail\": \"user@entreprise.com\", \"number\": \"1\"}\n\nCRITICAL RULES:\n1. Always collect Gmail FIRST, then company number\n2. Use your tool for all communication EXCEPT the final JSON output\n3. The final JSON output should be plain text (do not use the tool)\n4. Extract the exact Gmail from conversation history\n5. The number must be \"1\", \"2\", or \"3\" as a string\n\nEXAMPLES OF FINAL OUTPUT:\n{\"gmail\": \"john@entreprise.com\", \"number\": \"1\"}\n{\"gmail\": \"sara@gmail.com\", \"number\": \"2\"}\n{\"gmail\": \"mike@riverbyte.com\", \"number\": \"3\"}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        416
+      ],
+      "id": "ac022873-ef00-4134-8298-b4246e8f4f05",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        624
+      ],
+      "id": "8e0b2f9a-f9e2-4325-aa39-e4b77f2bb277",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "LObEJ90wJm6fojJI",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e0f58fe9-4876-4ac8-ad63-bac79ef37e1f",
+              "leftValue": "={{ $('Code in JavaScript').item.json.company_number }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -944,
+        256
+      ],
+      "id": "7a19494d-cf5e-443d-adb2-4786e65a8f9f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "377cc360-c10b-454d-8e73-accc5c21f3dc",
+              "leftValue": "={{ $json.company_number }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f3a320ef-b74f-4b01-9efd-9f966e7b0893",
+              "leftValue": "={{ $json.company_number }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f1eeec3a-9cae-4633-9ddb-3294cdb69857",
+              "leftValue": "={{ $json.company_number }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1120,
+        336
+      ],
+      "id": "20679de8-ba5d-4b75-b720-4d531d7e1fbd",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $input.first().json.output || \"\";\n\n// Try to parse as JSON\ntry {\n  // Clean markdown/code blocks\n  const cleanOutput = output\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n  const parsed = JSON.parse(cleanOutput);\n\n  const gmail = parsed.gmail || null;\n  const companyNumber = parsed.number || null;\n\n  // Condition system: numbers ONLY\n  let result = null;\n\n  if (companyNumber === 1) {\n    result = \"Option 1 selected\";\n  } else if (companyNumber === 2) {\n    result = \"Option 2 selected\";\n  } else if (companyNumber === 3) {\n    result = \"Option 3 selected\";\n  } else {\n    result = \"Unknown number\";\n  }\n\n  const isComplete = Boolean(gmail && companyNumber);\n\n  return [\n    {\n      json: {\n        gmail: gmail,\n        company_number: companyNumber,\n        has_complete_data: isComplete,\n        condition_result: result,\n        final_output: isComplete ? `${gmail} - ${companyNumber}` : null,\n        raw_output: output\n      }\n    }\n  ];\n\n} catch (error) {\n  // JSON invalid or missing\n  return [\n    {\n      json: {\n        gmail: null,\n        company_number: null,\n        has_complete_data: false,\n        condition_result: null,\n        final_output: null,\n        raw_output: output,\n        // SAFE ERROR HANDLING\n        parse_error: error?.message || String(error)\n      }\n    }\n  ];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        464
+      ],
+      "id": "2641879d-2f7e-428b-977f-841519480fe5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e94ea2e-99f7-453e-b7b4-adcf631b454e",
+              "leftValue": "={{ $json.company_number }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -704,
+        336
+      ],
+      "id": "5f00fd5c-1f08-489c-b00e-41d21fad8786",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "KNJbnPbBGkAWNBXJ",
+          "mode": "list",
+          "cachedResultName": "cv",
+          "cachedResultUrl": "/projects/hrX9YmdmVX19epDQ/datatables/KNJbnPbBGkAWNBXJ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "gmail": "={{ $('Code in JavaScript').item.json.gmail }}"
+          },
+          "matchingColumns": [
+            "gmail"
+          ],
+          "schema": [
+            {
+              "id": "gmail",
+              "displayName": "gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        176
+      ],
+      "id": "b94a2b9c-f042-463a-af3b-36ed875f265f",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "✅ Done! PDF sent to {{ $('Telegram Trigger').item.json.message.text }}",
+        "additionalFields": {}
+      },
+      "id": "528b4cbe-78ed-4760-9cf1-5c5301876240",
+      "name": "Send Success Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        112
+      ],
+      "webhookId": "ad824e8a-1dde-4873-84fa-8b36b5708410",
+      "credentials": {
+        "telegramApi": {
+          "id": "hyXh1Lh6DvkbTH4c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kB6K6y28r3puwy0J",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kB6K6y28r3puwy0J",
+          "cachedResultName": "CV 1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -416,
+        144
+      ],
+      "id": "4c9559d0-692b-4960-a922-e4652fd769b3",
+      "name": "Call 'CV 1'"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        656
+      ],
+      "id": "8131571e-9094-4007-8235-a2820a9ba321",
+      "name": "Send a text message in Telegram",
+      "webhookId": "4c67739c-56c0-4511-adb0-92c9f569f499",
+      "credentials": {
+        "telegramApi": {
+          "id": "hyXh1Lh6DvkbTH4c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        432
+      ],
+      "id": "cd98ee2c-4e6d-45f3-99f7-ec05bea5998c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "KNJbnPbBGkAWNBXJ",
+          "mode": "list",
+          "cachedResultName": "cv",
+          "cachedResultUrl": "/projects/hrX9YmdmVX19epDQ/datatables/KNJbnPbBGkAWNBXJ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "gmail": "={{ $('Code in JavaScript').item.json.gmail }}"
+          },
+          "matchingColumns": [
+            "gmail"
+          ],
+          "schema": [
+            {
+              "id": "gmail",
+              "displayName": "gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        336
+      ],
+      "id": "3b42449f-d5f7-4fe7-90d2-de513cc07304",
+      "name": "Insert row1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "✅ Done! PDF sent to {{ $('Telegram Trigger').item.json.message.text }}",
+        "additionalFields": {}
+      },
+      "id": "d081f65c-31e5-4b8c-9156-6c16a2be83fa",
+      "name": "Send Success Message1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        288
+      ],
+      "webhookId": "ad824e8a-1dde-4873-84fa-8b36b5708410",
+      "credentials": {
+        "telegramApi": {
+          "id": "hyXh1Lh6DvkbTH4c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "65e2Gylutjvb3nsz",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/65e2Gylutjvb3nsz",
+          "cachedResultName": "CV 2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        320
+      ],
+      "id": "08b74890-7cc4-43d5-8e86-0087889d4f91",
+      "name": "Call 'CV 2'1"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "KNJbnPbBGkAWNBXJ",
+          "mode": "list",
+          "cachedResultName": "cv",
+          "cachedResultUrl": "/projects/hrX9YmdmVX19epDQ/datatables/KNJbnPbBGkAWNBXJ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "gmail": "={{ $('Code in JavaScript').item.json.gmail }}"
+          },
+          "matchingColumns": [
+            "gmail"
+          ],
+          "schema": [
+            {
+              "id": "gmail",
+              "displayName": "gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        576
+      ],
+      "id": "1206c0a8-8549-4ca4-b91a-ed57a9a0af65",
+      "name": "Insert row2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "✅ Done! PDF sent to {{ $('Telegram Trigger').item.json.message.text }}",
+        "additionalFields": {}
+      },
+      "id": "b7a7f9da-8476-4946-abfb-17b50aadae33",
+      "name": "Send Success Message2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        544
+      ],
+      "webhookId": "ad824e8a-1dde-4873-84fa-8b36b5708410",
+      "credentials": {
+        "telegramApi": {
+          "id": "hyXh1Lh6DvkbTH4c",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "9YdPK5bTIWdESZ2M",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9YdPK5bTIWdESZ2M",
+          "cachedResultName": "CV3"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        576
+      ],
+      "id": "0986e3d8-6ed6-45f7-bd24-0ac83214f6ba",
+      "name": "Call 'CV3'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2670feb1-62a4-4ed9-bb2c-45e96f6fd598",
+              "leftValue": "={{ $json.company_number }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        656
+      ],
+      "id": "60e27329-384e-4c2b-b1ba-ce3f6fba2ba8",
+      "name": "If3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        752
+      ],
+      "id": "6285489f-1bae-4cfc-b191-fd1ebe346e1e",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Insert row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'CV 1'": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Call 'CV 1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message in Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row1": {
+      "main": [
+        [
+          {
+            "node": "Call 'CV 2'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'CV 2'1": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row2": {
+      "main": [
+        [
+          {
+            "node": "Call 'CV3'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'CV3'": {
+      "main": [
+        [
+          {
+            "node": "Send Success Message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Insert row2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "22e91f47-1eeb-425e-9dfb-592b65e9e96c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c57494c63eac81c81249c62828e8c3820aa52c05313b3fa16a2760486dc7dcd1"
+  },
+  "id": "ZfS107mNvWuzdfqj",
+  "tags": []
+}
